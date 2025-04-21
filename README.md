@@ -1,4 +1,7 @@
-# Forecasting Agent
+# Time Series Forecasting Agent/System (Streamlit)
+
+![Uploading Screenshot 2025-04-21 at 00.55.28.png…]()
+
 
 ## Comprehensive Documentation Suite
 
