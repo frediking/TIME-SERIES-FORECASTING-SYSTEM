@@ -1,6 +1,7 @@
 # Time Series Forecasting Agent/System (Streamlit)
 
-![Uploading Screenshot 2025-04-21 at 00.55.28.png…]()
+![Screenshot 2025-04-21 at 00 55 28](https://github.com/user-attachments/assets/a6af6669-20f4-45e7-915c-f58eb8601ccc)
+
 
 
 ## Comprehensive Documentation Suite
