@@ -26,50 +26,76 @@
    - Detection logic
 
 ## Project Structure
-```
 FORECASTING AGENT/
 ├── agent/                      # Core forecasting components
-│   ├── agent_core.py           # Main forecasting agent implementation
-│   ├── ensemble.py             # Ensemble forecasting system
-│   ├── models.py               # Unified model architecture
-│   └── model_registry.py       # Model versioning system
+│   ├── agent_core.py
+│   ├── ensemble.py
+│   ├── forecast.py
+│   ├── models.py
+│   └── utils.py
 │
-├── api/                        # Web interface
-│   └── app.py                  # Streamlit dashboard application
+├── api/                        # (Currently empty)
+│
+├── app.py                      # Streamlit dashboard application
+│
+├── config/                     # Configuration files
+│   ├── __init__.py
+│   ├── config.py
+│   ├── config_base.py
+│   └── drift_detection_config.yaml
+│
+├── data/                       # Data files and utilities
+│   ├── clean_utils.py
+│   ├── datacombine.py
+│   ├── *.csv / *.tsf           # Large datasets
+│   ├── data_download/
+│   └── visualizations/
+│
+├── docs/                       # Documentation
+│   └── *.md
+│
+├── drift_detection/            # (Currently empty)
+│
+├── logs/                       # Log files
+│
+├── metrics/                    # Model metrics
+│   └── *.jsonl
+│
+├── models/                     # Model evaluation and registry
+│   ├── evaluate_forecasting_model.py
+│   ├── hyperparameters.json
+│   └── registry/
+│       └── model_registry.py
 │
 ├── monitoring/                 # Production monitoring
-│   ├── drift_detection.py      # Statistical drift detection
-│   └── model_monitor.py        # Performance tracking
+│   ├── drift_detection.py
+│   ├── model_monitor.py
+│   └── prometheus/
+│
+├── monitoring_data/            # Monitoring outputs
+│   ├── metrics/
+│   ├── plots/
+│   ├── predictions/
+│   └── *.html
+│
+├── notebooks/                  # Jupyter notebooks
+│   └── *.ipynb
+│
+├── requirements.txt            # Python dependencies
+│
+├── results/                    # Output/results
 │
 ├── scripts/                    # Operational scripts
-│   ├── data_processing/        # Data preparation
-│   │   ├── README.md
-│   │   ├── combine_all_datasets.py
-│   │   ├── convert2csv.py
-│   │   ├── create_optimized_dataset.py
-│   │   └── parse_australian_data.py
-│   │
-│   ├── model_training/         # Training workflows
-│   │   ├── README.md
-│   │   ├── hyperparameter_tuning.py
-│   │   ├── run_hyperparameter_tuning.py
-│   │   └── train_forecasting_model.py
-│   │
-│   └── system_maintenance/     # System operations
-│       ├── README.md
-│       ├── logging_config.py
-│       └── run_tests.py
+│   ├── data_processing/
+│   ├── model_training/
+│   └── system_maintenance/
 │
-├── tests/                      # Test suite
-│   ├── mock_tensorflow.py      # Test mocks
-│   ├── mock_transformers.py
-│   ├── test_logging.py
-│   ├── test_models.py
-│   └── test_utils.py
+├── tests/                      # Unit and integration tests
+│   └── *.py
 │
-├── config.py                   # Centralized configuration system
-└── README.md                   # This file
-```
+├── utils/                      # (Currently empty)
+│
+├── venv/ / tf-env/             # Virtual environments
 
 ## Getting Started
 
