@@ -14,29 +14,38 @@ seaborn
 matplotlib
 streamlit
 python-dateutil
+
 xgboost
 lightgbm
-# Note: tensorflow packages are not included as they require special installation on Apple Silicon
 statsmodels
 pmdarima
 joblib
 tqdm
+
 # Monitoring and production dependencies
 prometheus-client
 pyyaml
 optuna
 torch
-pytest
-black
-isort
-flake8
-gunicorn
 mlflow
 boto3
 psutil
 dataclasses-json
+gunicorn
+
+# Linting and formatting
+black
+isort
+flake8
+
 # Testing dependencies
 pytest
 pytest-cov
 pytest-mock
 coverage
+
+# TensorFlow for Mac users (Apple Silicon): install manually, NOT via requirements.txt
+# pip install tensorflow-macos tensorflow-metal
+# For Intel Mac or Linux: pip install tensorflow
+
+# Note: Do NOT add 'tensorflow' here to avoid cross-platform install errors.
