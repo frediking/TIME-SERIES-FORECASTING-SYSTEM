@@ -1,0 +1,249 @@
+"""
+Unit tests for the ensemble forecasting system.
+"""
+import os
+import sys
+import pytest
+import tempfile
+import numpy as np
+import pandas as pd
+from pathlib import Path
+from datetime import datetime, timedelta
+
+# Add parent directory to path
+sys.path.append(str(Path(__file__).parent.parent))
+
+# Import mocks before importing any project modules
+from tests.mock_tensorflow import mock_tf
+from tests.mock_transformers import mock_transformers
+
+# Try to import ensemble module
+try:
+    from agent.ensemble import ForecastingEnsemble
+    ENSEMBLE_AVAILABLE = True
+except ImportError:
+    ENSEMBLE_AVAILABLE = False
+
+# Skip all tests in this module if ensemble isn't available
+pytestmark = pytest.mark.skipif(not ENSEMBLE_AVAILABLE, reason="Ensemble module not available")
+
+class TestEnsemble:
+    """Test cases for the ForecastingEnsemble class."""
+    
+    @pytest.fixture
+    def sample_data(self):
+        """Create sample data for testing the ensemble."""
+        # Create a simple dataset with multiple series
+        np.random.seed(42)
+        n_samples = 100
+        n_series = 2
+        
+        # Create dataframe
+        data = []
+        
+        for series_id in range(n_series):
+            for region in ['A', 'B']:
+                # Create time series data with trend and seasonality
+                timestamps = [datetime(2023, 1, 1) + timedelta(hours=i) for i in range(n_samples)]
+                time = np.arange(n_samples)
+                trend = 0.1 * time
+                seasonality = 10 * np.sin(2 * np.pi * time / 24)
+                noise = np.random.normal(0, 1, n_samples)
+                
+                target = trend + seasonality + noise
+                
+                # Create features
+                for i in range(n_samples):
+                    data.append({
+                        'timestamp': timestamps[i],
+                        'series_id': f'series_{series_id}',
+                        'region': region,
+                        'target': target[i],
+                        'feature1': np.random.rand(),
+                        'feature2': np.random.rand()
+                    })
+        
+        df = pd.DataFrame(data)
+        return df
+    
+    def test_init(self):
+        """Test initialization of ensemble."""
+        ensemble = ForecastingEnsemble()
+        assert ensemble.models == {}
+        assert ensemble.scalers == {}
+        assert ensemble.history == {}
+        assert ensemble.target_column is None
+        assert isinstance(ensemble.ensemble_weights, dict)
+    
+    def test_preprocess_data(self, sample_data):
+        """Test data preprocessing."""
+        ensemble = ForecastingEnsemble()
+        features, targets = ensemble.preprocess_data(sample_data, 'target')
+        
+        # Check that features and targets are dictionaries
+        assert isinstance(features, dict)
+        assert isinstance(targets, dict)
+        
+        # Check that each series is processed
+        assert len(features) == 4  # 2 series * 2 regions
+        assert len(targets) == 4
+        
+        # Check that each series has the correct data
+        for name, group_df in features.items():
+            assert isinstance(group_df, pd.DataFrame)
+            assert 'target' in group_df.columns
+            assert 'timestamp' in group_df.columns
+            assert 'feature1' in group_df.columns
+            assert 'feature2' in group_df.columns
+            
+            # Check that targets are numpy arrays
+            assert isinstance(targets[name], np.ndarray)
+            assert len(targets[name]) == len(group_df)
+    
+    def test_train_model(self, sample_data):
+        """Test model training."""
+        ensemble = ForecastingEnsemble()
+        
+        # Train with minimal models for faster testing
+        models = ensemble.train_model(
+            df=sample_data,
+            target_column='target',
+            model_types=['xgboost']
+        )
+        
+        # Check that models were trained
+        assert isinstance(models, dict)
+        assert len(models) == 4  # 2 series * 2 regions
+        
+        # Check that each series has the correct models
+        for name, series_models in models.items():
+            assert 'xgboost' in series_models
+            assert series_models['xgboost'] is not None
+        
+        # Check that history was stored
+        assert len(ensemble.history) == 4
+        for name, history in ensemble.history.items():
+            assert 'train_data' in history
+            assert 'test_data' in history
+    
+    def test_forecast(self, sample_data):
+        """Test forecasting."""
+        ensemble = ForecastingEnsemble()
+        
+        # Train with minimal models for faster testing
+        ensemble.train_model(
+            df=sample_data,
+            target_column='target',
+            model_types=['xgboost']
+        )
+        
+        # Generate forecasts
+        forecasts = ensemble.forecast(horizon=5)
+        
+        # Check that forecasts were generated
+        assert isinstance(forecasts, dict)
+        assert len(forecasts) == 4  # 2 series * 2 regions
+        
+        # Check that each series has the correct forecasts
+        for name, series_forecasts in forecasts.items():
+            assert 'xgboost' in series_forecasts
+            assert 'ensemble' in series_forecasts
+            assert len(series_forecasts['xgboost']) == 5
+            assert len(series_forecasts['ensemble']) == 5
+    
+    def test_save_load_models(self, sample_data):
+        """Test saving and loading models."""
+        ensemble = ForecastingEnsemble()
+        
+        # Train with minimal models for faster testing
+        ensemble.train_model(
+            df=sample_data,
+            target_column='target',
+            model_types=['xgboost']
+        )
+        
+        # Create temporary directory for saving models
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Save models
+            ensemble.save_models(path=temp_dir)
+            
+            # Check that models were saved
+            assert os.path.exists(os.path.join(temp_dir, 'ensemble_config.json'))
+            
+            # Create new ensemble
+            new_ensemble = ForecastingEnsemble()
+            
+            # Load models
+            loaded_models = new_ensemble.load_models(path=temp_dir)
+            
+            # Check that models were loaded
+            assert isinstance(loaded_models, dict)
+            assert len(loaded_models) == 4  # 2 series * 2 regions
+            
+            # Check that each series has the correct models
+            for name, series_models in loaded_models.items():
+                assert 'xgboost' in series_models
+                assert series_models['xgboost'] is not None
+
+            # After assertions
+            for series in loaded_models.values():
+                for model in series.values():
+                    if hasattr(model, 'model') and isinstance(model.model, torch.nn.Module):
+                        del model.model
+            torch.mps.empty_cache()  # Critical for M1/M2 GPUs
+    
+    def test_evaluate_models(self, sample_data):
+        """Test model evaluation."""
+        ensemble = ForecastingEnsemble()
+        
+        # Train with minimal models for faster testing
+        ensemble.train_model(
+            df=sample_data,
+            target_column='target',
+            model_types=['xgboost']
+        )
+        
+        # Evaluate models
+        results = ensemble.evaluate_models(horizon=5)
+        
+        # Check that results were generated
+        assert isinstance(results, dict)
+        assert len(results) == 4  # 2 series * 2 regions
+        
+        # Check that each series has the correct metrics
+        for name, series_results in results.items():
+            assert 'xgboost' in series_results
+            assert 'MSE' in series_results['xgboost']
+            assert 'RMSE' in series_results['xgboost']
+            assert 'MAE' in series_results['xgboost']
+    
+    def test_get_feature_importance(self, sample_data):
+        """Test getting feature importance."""
+        ensemble = ForecastingEnsemble()
+        
+        # Train with minimal models for faster testing
+        ensemble.train_model(
+            df=sample_data,
+            target_column='target',
+            model_types=['xgboost']
+        )
+        
+        # Get feature importance
+        importance = ensemble.get_feature_importance()
+        
+        # Check that importance was generated
+        assert isinstance(importance, dict)
+        assert len(importance) == 4  # 2 series * 2 regions
+        
+        # Check that each series has the correct importance
+        for name, series_importance in importance.items():
+            assert 'xgboost' in series_importance
+            assert isinstance(series_importance['xgboost'], dict)
+            assert len(series_importance['xgboost']) > 0
+            
+    def test_hyperparameter_loading(self):
+        """Verify hyperparameters load correctly"""
+        ensemble = ForecastingEnsemble()
+        assert hasattr(ensemble, 'hyperparameters'), "Missing hyperparameters"
+        assert 'xgboost' in ensemble.hyperparameters, "XGBoost params missing"
+        assert 'lightgbm' in ensemble.hyperparameters, "LightGBM params missing" 

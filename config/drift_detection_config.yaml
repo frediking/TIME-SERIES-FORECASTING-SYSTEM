@@ -1,0 +1,54 @@
+###############################################
+# Model Drift Detection Configuration
+###############################################
+
+# Enable/disable drift detection
+drift_detection:
+  enabled: true
+  
+  # Thresholds for drift detection
+  thresholds:
+    # Statistical thresholds
+    ks_pvalue: 0.05          # p-value threshold for KS test (lower values indicate drift)
+    psi_threshold: 0.2       # Population Stability Index threshold (higher values indicate drift)
+    
+    # Performance thresholds
+    performance_ratio: 1.2   # Ratio of current to baseline metrics (higher values indicate degradation)
+    trend_slope: 0.01        # Positive slope indicates degradation trend
+  
+  # Windows for drift detection
+  windows:
+    baseline_window: 30      # Days to use for baseline metrics
+    detection_window: 7      # Days to use for current metrics
+  
+  # Storage configuration
+  storage:
+    path: "monitoring/drift_detection"
+    max_history: 90          # Days to keep drift detection history
+  
+  # Visualization configuration
+  visualization:
+    plot_types:
+      - "error_distribution"
+      - "error_over_time"
+      - "actual_vs_predicted"
+    max_points: 1000         # Maximum number of points to plot
+
+# Auto-retraining configuration
+auto_retrain:
+  enabled: true
+  threshold: 0.2             # Performance degradation threshold for auto-retraining
+  min_interval_days: 7       # Minimum days between retraining
+  max_retrain_attempts: 3    # Maximum number of retraining attempts per month
+
+# Alerting configuration
+alerting:
+  enabled: true
+  channels:
+    email: false
+    slack: false
+    logs: true
+  thresholds:
+    warning: 0.1             # Performance degradation threshold for warning
+    critical: 0.3            # Performance degradation threshold for critical alert
+  cooldown_hours: 24         # Minimum hours between alerts for the same model/series

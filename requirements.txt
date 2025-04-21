@@ -1,0 +1,42 @@
+transformers
+pandas
+numpy
+langchain
+fastapi
+uvicorn
+openai
+pydantic
+python-dotenv
+scikit-learn
+plotly
+jupyter
+seaborn
+matplotlib
+streamlit
+python-dateutil
+xgboost
+lightgbm
+# Note: tensorflow packages are not included as they require special installation on Apple Silicon
+statsmodels
+pmdarima
+joblib
+tqdm
+# Monitoring and production dependencies
+prometheus-client
+pyyaml
+optuna
+torch
+pytest
+black
+isort
+flake8
+gunicorn
+mlflow
+boto3
+psutil
+dataclasses-json
+# Testing dependencies
+pytest
+pytest-cov
+pytest-mock
+coverage

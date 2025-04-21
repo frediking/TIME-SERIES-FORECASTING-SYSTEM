@@ -1,0 +1,38 @@
+{
+    "xgboost": {
+      "max_depth": 6,
+      "learning_rate": 0.1,
+      "n_estimators": 100,
+      "subsample": 0.8,
+      "colsample_bytree": 0.8,
+      "min_child_weight": 1,
+      "gamma": 0
+    },
+    "lightgbm": {
+      "num_leaves": 31,
+      "learning_rate": 0.1,
+      "n_estimators": 100,
+      "subsample": 0.8,
+      "colsample_bytree": 0.8,
+      "min_child_samples": 20,
+      "reg_alpha": 0.0,
+      "reg_lambda": 0.0
+    },
+    "lstm": {
+      "units": 64,
+      "dropout": 0.2,
+      "learning_rate": 0.001,
+      "batch_size": 32,
+      "epochs": 50,
+      "seq_length": 24
+    },
+    "transformer": {
+      "d_model": 32,
+      "n_heads": 4,
+      "n_layers": 3,
+      "dropout": 0.1,
+      "prediction_length": 24,
+      "batch_size": 32,
+      "learning_rate": 0.0001
+    }
+  }

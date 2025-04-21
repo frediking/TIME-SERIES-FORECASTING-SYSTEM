@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environments
+venv/
+tf-env/
+
+# Data files
+data/*.csv
+data/*.tsf
+data/visualizations/
+data/simulated_*.csv
+
+# Notebooks
+*.ipynb
+
+# Logs and results
+logs/
+results/
+monitoring_data/
+*.log
+
+# OS files
+.DS_Store
+
+# Test, cache, and coverage
+.pytest_cache/
+.coverage
+
+# Environment and config
+.env
+*.env
+
+# Ignore model weights/checkpoints if any
+*.h5
+*.ckpt
+*.pth
+*.pt
