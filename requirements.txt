@@ -44,8 +44,8 @@ pytest-cov
 pytest-mock
 coverage
 
-# TensorFlow for Mac users (Apple Silicon): install manually, NOT via requirements.txt
-# pip install tensorflow-macos tensorflow-metal
-# For Intel Mac or Linux: pip install tensorflow
+# TensorFlow for deployment (Linux/Intel, e.g. Streamlit Cloud, Heroku)
+tensorflow
 
-# Note: Do NOT add 'tensorflow' here to avoid cross-platform install errors.
+# For local development on Apple Silicon (do NOT use these on cloud):
+# pip install tensorflow-macos tensorflow-metal
