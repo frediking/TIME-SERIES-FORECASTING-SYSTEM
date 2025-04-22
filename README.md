@@ -7,11 +7,11 @@
 
 This project is a multi-model time series forecasting system that integrates:
 
-• LSTM (Long Short-Term Memory): A type of recurrent neural network adept at capturing temporal dependencies in sequential data.
+• **LSTM** (Long Short-Term Memory): A type of recurrent neural network adept at capturing temporal dependencies in sequential data.
 
-• XGBoost: An optimized gradient boosting framework that excels in handling structured data and capturing complex patterns.
+• **XGBoost**: An optimized gradient boosting framework that excels in handling structured data and capturing complex patterns.
 
-• Prophet: A forecasting tool developed by Facebook, designed for time series data with multiple seasonality and trend components.
+• **Prophet**: A forecasting tool developed by Facebook, designed for time series data with multiple seasonality and trend components.
 
 The system provides a unified platform to preprocess data, train models, and generate forecasts, all accessible through an intuitive Streamlit interface.
 
