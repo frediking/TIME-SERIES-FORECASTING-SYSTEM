@@ -6,6 +6,7 @@
 
 
 This project is a multi-model time series forecasting system that integrates:
+
 • LSTM (Long Short-Term Memory): A type of recurrent neural network adept at capturing temporal dependencies in sequential data.
 
 • XGBoost: An optimized gradient boosting framework that excels in handling structured data and capturing complex patterns.
