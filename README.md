@@ -5,7 +5,7 @@
 
 
 
-This project is a multi-model time series forecasting system that integrates:
+### This project is a multi-model time series forecasting system that integrates:
 
 • **LSTM** (Long Short-Term Memory): A type of recurrent neural network adept at capturing temporal dependencies in sequential data.
 
